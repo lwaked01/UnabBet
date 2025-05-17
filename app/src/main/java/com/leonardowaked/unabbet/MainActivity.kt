@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             UnabBetTheme {
-                LoginScreen()
+                NavigationApp()
 
                 }
             }

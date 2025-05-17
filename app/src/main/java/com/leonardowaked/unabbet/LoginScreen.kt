@@ -1,5 +1,6 @@
 package com.leonardowaked.unabbet
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -23,16 +25,38 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.auth
 
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onClickRegister : ()->Unit = {},  onSuccessfulLogin: ()->Unit = {}) {
+
+    var inputEmail by remember { mutableStateOf("") }
+    var inputPassword by remember { mutableStateOf("") }
+    var loginError by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf("")}
+    var passwordError by remember { mutableStateOf("")}
+
+
+    val auth = Firebase.auth
+    val activity = LocalView.current.context as Activity
 
     Column(
         modifier = Modifier
@@ -94,33 +118,94 @@ fun LoginScreen() {
                     Spacer(modifier = Modifier.height(20.dp))
 
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
+                        value = inputEmail,
+                        onValueChange = {inputEmail = it},
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text(text = "Correo Electronico", color = Color(0xFFF5EDDE)) },
                         leadingIcon = {
                             Icon(Icons.Default.Email, contentDescription = null, tint = Color(0xFFFFFFFF))
                         },
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        supportingText = {
+                            if (emailError.isNotEmpty()){
+                                Text(
+                                    text = emailError,
+                                    color = Color.Red
+                                )
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.None,
+                            autoCorrect = false,
+                            keyboardType = KeyboardType.Email
+                    )
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
+                        value = inputPassword,
+                        onValueChange = {inputPassword = it},
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text("Contraseña", color = Color(0xFFF5EDDE)) },
                         leadingIcon = {
                             Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFFFFFFFF))
                         },
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        supportingText = {
+                            if (passwordError.isNotEmpty()){
+                                Text(
+                                    text = passwordError,
+                                    color = Color.Red
+                                )
+                            }
+                        },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.None,
+                            autoCorrect = false,
+                            keyboardType = KeyboardType.Password
+                        )
+
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
+                    if (loginError.isNotEmpty()){
+                        Text(
+                            loginError,
+                            color = Color.Red,
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                        )
+                    }
+
                     Button(
-                        onClick = {},
+                        onClick = {
+                            val isValidEmail: Boolean = validateEmail(inputEmail).first
+
+                            val isValidPassword: Boolean = validatePassword(inputPassword).first
+
+                            emailError = validateEmail(inputEmail).second
+                            passwordError = validatePassword(inputPassword).second
+
+                            if (isValidEmail && isValidPassword) {
+                                auth.signInWithEmailAndPassword(inputEmail, inputPassword)
+                                    .addOnCompleteListener(activity) { task ->
+                                        if (task.isSuccessful) {
+                                            onSuccessfulLogin()
+                                        } else {
+
+                                            loginError = when (task.exception) {
+                                                is FirebaseAuthInvalidCredentialsException -> "Correo o contrasea incorrecta"
+                                                is FirebaseAuthInvalidUserException -> "No existe una cuenta con este correo"
+                                                else -> "Error al iniciar sesion. Intenta de nuevo"
+                                            }
+                                        }
+                                    }
+                            } else {
+                                1f
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
@@ -135,7 +220,7 @@ fun LoginScreen() {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    TextButton(onClick = {}) {
+                    TextButton(onClick = onClickRegister) {
                         Text("¿No tienes cuenta?", color = Color(0xFFF5EDDE))
                     }
                 }

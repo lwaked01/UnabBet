@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "736176318805",
+    "project_id": "unabbet-65a6b",
+    "storage_bucket": "unabbet-65a6b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736176318805:android:c3fc0840afb98ab3e727dc",
+        "android_client_info": {
+          "package_name": "com.leonardowaked.unabbet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDn7TdIQE9jxm2LE2JWvU5HBN5BdWcUKU8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
