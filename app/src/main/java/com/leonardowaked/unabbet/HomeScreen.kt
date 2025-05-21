@@ -20,10 +20,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel // Importar para usar ViewModel
+import androidx.navigation.NavController
+import com.google.gson.Gson
 
 import com.leonardowaked.unabbet.data.models.LeagueData
 import com.leonardowaked.unabbet.data.models.MatchResponse
 import com.leonardowaked.unabbet.network.RetrofitClient // Importar tu cliente Retrofit
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate // Necesitarás Java 8+ API para esto
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -99,9 +103,9 @@ class MainViewModel : androidx.lifecycle.ViewModel() {
 }
 
 
-@Preview
+
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     // Instancia del ViewModel
     val viewModel: MainViewModel = viewModel()
 
@@ -251,7 +255,8 @@ fun HomeScreen() {
                                     verticalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     items(viewModel.partidos) { match ->
-                                        PartidoCard(match = match)
+                                        // Pasa el navController a PartidoCard
+                                        PartidoCard(match = match, navController = navController)
                                     }
                                 }
                             }
@@ -343,7 +348,7 @@ fun TabButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun PartidoCard(match: MatchResponse) {
+fun PartidoCard(match: MatchResponse, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -368,11 +373,11 @@ fun PartidoCard(match: MatchResponse) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // Muestra el marcador o el tiempo/estado
+            // Lógica para mostrar el estado del partido (minuto, o goles finales)
             val displayStatus = when (match.fixture.status.short) {
-                "FT", "AET", "PEN" -> "${match.goals.home ?: "-"} - ${match.goals.away ?: "-"}" // Marcador final
-                "HT", "1H", "2H", "ET", "BT" -> "${match.fixture.status.elapsed?.toString() ?: ""}´" // Minuto
-                "NS", "PST", "CANC", "ABD" -> match.fixture.status.short // No iniciado, Pospuesto, etc.
+                "FT", "AET", "PEN" -> "${match.goals.home ?: "-"} - ${match.goals.away ?: "-"}"
+                "HT", "1H", "2H", "ET", "BT" -> "${match.fixture.status.elapsed?.toString() ?: ""}´"
+                "NS", "PST", "CANC", "ABD" -> match.fixture.status.short
                 else -> match.fixture.status.short
             }
             Text(
@@ -383,9 +388,11 @@ fun PartidoCard(match: MatchResponse) {
             Spacer(modifier = Modifier.width(8.dp))
             Button(
                 onClick = {
-                    // Lógica para el botón "Apostar"
-                    // Aquí iría la pantalla o diálogo para que el usuario haga su apuesta
-                    Log.d("Apostar", "Apostar en el partido: ${match.teams.home.name} vs ${match.teams.away.name}")
+                    val matchJson = Gson().toJson(match)
+                    // 1. Codificar el JSON para que sea seguro en la URL
+                    val encodedMatchJson = URLEncoder.encode(matchJson, StandardCharsets.UTF_8.toString()) //
+                    // 2. Navegar con el JSON codificado
+                    navController.navigate("bet/${encodedMatchJson}") //
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7A1E1E)),
                 shape = RoundedCornerShape(4.dp)
@@ -395,7 +402,6 @@ fun PartidoCard(match: MatchResponse) {
         }
     }
 }
-
 @Composable
 fun LeagueCard(league: LeagueData) {
     Row(
