@@ -144,7 +144,6 @@ fun HomeScreen() {
                     .fillMaxWidth()
                     .height(100.dp)
             )
-
             Spacer(modifier = Modifier.height(46.dp))
 
             Column(
