@@ -64,4 +64,17 @@ dependencies {
 
     implementation(libs.firebase.auth)
 
+    dependencies {
+        // Retrofit para las llamadas a la API
+        implementation("com.squareup.retrofit2:retrofit:2.9.0")
+        // GSON para convertir JSON a objetos Kotlin
+        implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+        // Kotlin Coroutines para manejar operaciones asíncronas
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+        // Lifecycle components para el lifecycleScope en Composable
+        implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+        implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2") // Para viewModels en Compose si los usas
+
+    }
 }
