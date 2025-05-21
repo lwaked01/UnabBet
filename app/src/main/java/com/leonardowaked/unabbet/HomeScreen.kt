@@ -2,6 +2,7 @@ package com.leonardowaked.unabbet
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,27 +35,66 @@ fun HomeScreen() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = { }) {
+                IconButton(onClick = { /* Abre el Drawer si lo usas */ }) {
                     Icon(Icons.Default.Menu, contentDescription = "Menú")
                 }
 
-                Image(
-                    painter = painterResource(id = R.drawable.logo_bet),
-                    contentDescription = "UnabBet",
-                    modifier = Modifier.size(40.dp)
-                )
-
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(text = "$100.000", fontWeight = FontWeight.Bold)
-                    Text(text = "Cajero", fontSize = 12.sp)
+                // Botón para el LOGO
+                Button(
+                    onClick = { },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.Black
+                    ),
+                    contentPadding = PaddingValues(0.dp),
+                    elevation = ButtonDefaults.buttonElevation(0.dp),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_bet),
+                        contentDescription = "UnabBet",
+                        modifier = Modifier.size(40.dp)
+                    )
                 }
 
-                Text(
-                    text = "Cuenta",
-                    modifier = Modifier.padding(start = 8.dp),
-                    fontWeight = FontWeight.Bold
-                )
+                // Botón para el dinero + Cajero
+                Button(
+                    onClick = {  },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.Black
+                    ),
+                    contentPadding = PaddingValues(0.dp),
+                    elevation = ButtonDefaults.buttonElevation(0.dp),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(text = "$100.000", fontWeight = FontWeight.Bold)
+                        Text(text = "Cajero", fontSize = 12.sp)
+                    }
+                }
+
+                // Botón para el texto "Cuenta"
+                Button(
+                    onClick = {  },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.Black
+                    ),
+                    contentPadding = PaddingValues(0.dp),
+                    elevation = ButtonDefaults.buttonElevation(0.dp),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        text = "Cuenta",
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
+
+
+
+
 
 
             Row(
@@ -64,10 +104,37 @@ fun HomeScreen() {
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                listOf("En Vivo", "Proximos", "Competiciones").forEach {
-                    Text(text = it, color = Color.White, fontWeight = FontWeight.Bold)
-                }
+                Text(
+                    text = "En Vivo",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        println("En Vivo clickeado")
+                        // Acción de En Vivo
+                    }
+                )
+
+                Text(
+                    text = "Próximos",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        println("Próximos clickeado")
+                        // Acción de Próximos
+                    }
+                )
+
+                Text(
+                    text = "Competiciones",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.clickable {
+                        println("Competiciones clickeado")
+                        // Acción de Competiciones
+                    }
+                )
             }
+
 
 
             Image(
@@ -137,9 +204,11 @@ fun HomeScreen() {
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp
             )
+
         }
     }
 }
+
 
 @Composable
 fun PartidoCard(equipos: String, minuto: String, botonTexto: String) {

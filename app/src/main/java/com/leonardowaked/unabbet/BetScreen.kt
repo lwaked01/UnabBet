@@ -182,30 +182,67 @@ fun TopBar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFF5EDDE))
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(onClick = { }) {
-            Icon(Icons.Default.Menu, contentDescription = "Menu")
+        IconButton(onClick = { /* Abre el Drawer si lo usas */ }) {
+            Icon(Icons.Default.Menu, contentDescription = "Menú")
         }
 
-        Image(
-            painter = painterResource(id = R.drawable.logo_bet),
-            contentDescription = "UnabBet",
-            modifier = Modifier.size(40.dp)
-        )
-
-        Column(horizontalAlignment = Alignment.End) {
-            Text(text = "$100.000", fontWeight = FontWeight.Bold)
-            Text(text = "Cajero", fontSize = 12.sp)
+        // Botón para el LOGO
+        Button(
+            onClick = { },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.Black
+            ),
+            contentPadding = PaddingValues(0.dp),
+            elevation = ButtonDefaults.buttonElevation(0.dp),
+            shape = RoundedCornerShape(4.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo_bet),
+                contentDescription = "UnabBet",
+                modifier = Modifier.size(40.dp)
+            )
         }
 
-        Text(
-            text = "Cuenta",
-            modifier = Modifier.padding(start = 8.dp),
-            fontWeight = FontWeight.Bold
-        )
+        // Botón para el dinero + Cajero
+        Button(
+            onClick = { },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.Black
+            ),
+            contentPadding = PaddingValues(0.dp),
+            elevation = ButtonDefaults.buttonElevation(0.dp),
+            shape = RoundedCornerShape(4.dp)
+        ) {
+            Column(horizontalAlignment = Alignment.End) {
+                Text(text = "$100.000", fontWeight = FontWeight.Bold)
+                Text(text = "Cajero", fontSize = 12.sp)
+            }
+        }
+
+        // Botón para el texto "Cuenta"
+        Button(
+            onClick = { },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.Black
+            ),
+            contentPadding = PaddingValues(0.dp),
+            elevation = ButtonDefaults.buttonElevation(0.dp),
+            shape = RoundedCornerShape(4.dp)
+        ) {
+            Text(
+                text = "Cuenta",
+                fontWeight = FontWeight.Bold
+            )
+        }
+
     }
+
 }
+
