@@ -93,47 +93,48 @@ fun HomeScreen() {
             }
 
 
-
-
-
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFF7A1E1E))
                     .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "En Vivo",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {
-                        println("En Vivo clickeado")
-                        // Acción de En Vivo
-                    }
-                )
+                Button(
+                    onClick = {  },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.White
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(0.dp)
+                ) {
+                    Text("En Vivo", fontWeight = FontWeight.Bold)
+                }
 
-                Text(
-                    text = "Próximos",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {
-                        println("Próximos clickeado")
-                        // Acción de Próximos
-                    }
-                )
+                Button(
+                    onClick = {  },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.White
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(0.dp)
+                ) {
+                    Text("Próximos", fontWeight = FontWeight.Bold)
+                }
 
-                Text(
-                    text = "Competiciones",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable {
-                        println("Competiciones clickeado")
-                        // Acción de Competiciones
-                    }
-                )
+                Button(
+                    onClick = {  },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                        contentColor = Color.White
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(0.dp)
+                ) {
+                    Text("Competiciones", fontWeight = FontWeight.Bold)
+                }
             }
+
 
 
 
