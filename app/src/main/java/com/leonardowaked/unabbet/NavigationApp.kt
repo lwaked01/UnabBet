@@ -50,7 +50,9 @@ fun NavigationApp(){
         }
         composable ("home") {
             // Pasamos el NavController a HomeScreen
-            HomeScreen(navController = myNavController)
+            HomeScreen(navController = myNavController, onClickAccount = {
+                myNavController.navigate("account")
+            })
         }
         composable (
             route = "bet/{matchJson}", // La ruta ahora incluye el argumento {matchJson}
@@ -66,6 +68,14 @@ fun NavigationApp(){
             } else {
                 myNavController.popBackStack()
             }
+        }
+        composable ( "account" ) {
+            AccountScreen(onClickLogOut = {
+                myNavController.navigate("login") {
+                    popUpTo(0)
+                }
+            }, onClickBack = {
+                myNavController.popBackStack() } )
         }
     }
 }

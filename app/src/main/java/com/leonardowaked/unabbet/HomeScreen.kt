@@ -32,7 +32,6 @@ import java.time.LocalDate // Necesitarás Java 8+ API para esto
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-// ViewModel para manejar la lógica de la API y el estado
 class MainViewModel : androidx.lifecycle.ViewModel() {
     var partidos by mutableStateOf<List<MatchResponse>>(emptyList())
         private set
@@ -105,13 +104,11 @@ class MainViewModel : androidx.lifecycle.ViewModel() {
 
 
 @Composable
-fun HomeScreen(navController: NavController) {
-    // Instancia del ViewModel
+fun HomeScreen(onClickAccount: () -> Unit = {},navController: NavController) {
     val viewModel: MainViewModel = viewModel()
 
     var selectedTab by remember { mutableStateOf("En Vivo") }
 
-    // Usamos LaunchedEffect para disparar la carga de datos cuando cambia la pestaña
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
             "En Vivo" -> viewModel.fetchLiveFixtures()
@@ -127,7 +124,6 @@ fun HomeScreen(navController: NavController) {
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // --- HEADER (Tu código original) ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -135,8 +131,32 @@ fun HomeScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = { /* Abre el Drawer si lo usas */ }) {
+                var expanded by remember { mutableStateOf(false) }
+
+                IconButton(onClick = { expanded = true }) {
                     Icon(Icons.Default.Menu, contentDescription = "Menú")
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Cuenta") },
+                        onClick = {
+                            expanded = false
+                            onClickAccount()
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("Historial de apuestas") },
+                        onClick = {
+                            expanded = false
+                            println("Historial clickeado")
+                        }
+                    )
+
                 }
 
                 Button(
@@ -172,25 +192,9 @@ fun HomeScreen(navController: NavController) {
                     }
                 }
 
-                Button(
-                    onClick = {  },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = Color.Black
-                    ),
-                    contentPadding = PaddingValues(0.dp),
-                    elevation = ButtonDefaults.buttonElevation(0.dp),
-                    shape = RoundedCornerShape(4.dp)
-                ) {
-                    Text(
-                        text = "Cuenta",
-                        fontWeight = FontWeight.Bold
-                    )
-                }
             }
 
 
-            // --- PESTAÑAS DE NAVEGACIÓN ---
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -204,7 +208,6 @@ fun HomeScreen(navController: NavController) {
                 TabButton(text = "Competiciones", isSelected = selectedTab == "Competiciones") { selectedTab = "Competiciones" }
             }
 
-            // --- BANNER (Tu código original) ---
             Image(
                 painter = painterResource(id = R.drawable.banner),
                 contentDescription = "Football Banner",
@@ -212,9 +215,8 @@ fun HomeScreen(navController: NavController) {
                     .fillMaxWidth()
                     .height(100.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp)) // Ajustado un poco para mejor espaciado
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // --- CONTENIDO PRINCIPAL (DINÁMICO SEGÚN LA PESTAÑA) ---
             if (viewModel.isLoading) {
                 Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = Color(0xFF7A1E1E))
@@ -226,11 +228,10 @@ fun HomeScreen(navController: NavController) {
             } else {
                 when (selectedTab) {
                     "En Vivo", "Próximos" -> {
-                        // Lista de partidos en vivo o próximos
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp) // Reducido el padding para que no se corte tanto
+                                .padding(horizontal = 16.dp)
                                 .background(Color(0xFF7A1E1E), shape = RoundedCornerShape(20.dp))
                                 .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
@@ -255,7 +256,6 @@ fun HomeScreen(navController: NavController) {
                                     verticalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     items(viewModel.partidos) { match ->
-                                        // Pasa el navController a PartidoCard
                                         PartidoCard(match = match, navController = navController)
                                     }
                                 }
@@ -263,7 +263,6 @@ fun HomeScreen(navController: NavController) {
                         }
                     }
                     "Competiciones" -> {
-                        // Lista de competiciones
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -302,7 +301,6 @@ fun HomeScreen(navController: NavController) {
             }
         }
 
-        // --- FOOTER (Tu código original) ---
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -332,14 +330,13 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
-// Composable para el botón de las pestañas (más limpio)
 @Composable
 fun TabButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = if (isSelected) Color.Yellow else Color.White // Color si está seleccionada
+            contentColor = if (isSelected) Color.Yellow else Color.White
         ),
         elevation = ButtonDefaults.buttonElevation(0.dp)
     ) {
@@ -373,7 +370,6 @@ fun PartidoCard(match: MatchResponse, navController: NavController) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // Lógica para mostrar el estado del partido (minuto, o goles finales)
             val displayStatus = when (match.fixture.status.short) {
                 "FT", "AET", "PEN" -> "${match.goals.home ?: "-"} - ${match.goals.away ?: "-"}"
                 "HT", "1H", "2H", "ET", "BT" -> "${match.fixture.status.elapsed?.toString() ?: ""}´"
@@ -389,9 +385,7 @@ fun PartidoCard(match: MatchResponse, navController: NavController) {
             Button(
                 onClick = {
                     val matchJson = Gson().toJson(match)
-                    // 1. Codificar el JSON para que sea seguro en la URL
                     val encodedMatchJson = URLEncoder.encode(matchJson, StandardCharsets.UTF_8.toString()) //
-                    // 2. Navegar con el JSON codificado
                     navController.navigate("bet/${encodedMatchJson}") //
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7A1E1E)),
@@ -425,7 +419,5 @@ fun LeagueCard(league: LeagueData) {
                 fontSize = 12.sp
             )
         }
-        // Aquí podrías mostrar el logo de la liga si tienes una librería como Coil o Glide
-        // AsyncImage(model = league.league.logo, contentDescription = league.league.name, modifier = Modifier.size(40.dp))
     }
 }
