@@ -2,7 +2,6 @@ package com.leonardowaked.unabbet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,11 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // Preferimos esta por accesibilidad
+// import androidx.compose.material.icons.filled.ArrowBack // ¡Esta importación es duplicada y se puede quitar!
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -28,11 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.leonardowaked.unabbet.util.BalanceManager // ¡IMPORTANTE: Importar BalanceManager!
 
 @Preview
 @Composable
@@ -42,6 +40,9 @@ fun AccountScreen(
 ) {
     val auth = Firebase.auth
     var user by remember { mutableStateOf(auth.currentUser) }
+
+    // Observar el saldo del usuario del BalanceManager
+    val userBalance by BalanceManager.userBalance.collectAsState()
 
     LaunchedEffect(Unit) {
         auth.currentUser?.reload()?.addOnCompleteListener {
@@ -71,7 +72,7 @@ fun AccountScreen(
                     .padding(bottom = 16.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack, // Usamos la versión de autocierre
                     contentDescription = "Volver",
                     tint = Color(0xFF7A1E1E),
                     modifier = Modifier
@@ -89,7 +90,8 @@ fun AccountScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            ProfileCard(displayName, email)
+            // Pasar el saldo dinámico a ProfileCard
+            ProfileCard(displayName, email, userBalance)
 
             Spacer(modifier = Modifier.height(30.dp))
 
@@ -110,7 +112,7 @@ fun AccountScreen(
 }
 
 @Composable
-fun ProfileCard(nombre: String, correo: String ) {
+fun ProfileCard(nombre: String, correo: String, saldo: Double) { // ¡saldo como parámetro!
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -152,13 +154,11 @@ fun ProfileCard(nombre: String, correo: String ) {
             fontSize = 16.sp
         )
         Text(
-            text = "$100.000",
+            text = "$%.2f".format(saldo), // ¡Ahora muestra el saldo dinámico!
             color = Color.White,
             fontSize = 14.sp
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-
-
     }
 }

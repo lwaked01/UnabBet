@@ -19,19 +19,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel // Importar para usar ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.google.gson.Gson
 
 import com.leonardowaked.unabbet.data.models.LeagueData
 import com.leonardowaked.unabbet.data.models.MatchResponse
-import com.leonardowaked.unabbet.network.RetrofitClient // Importar tu cliente Retrofit
+import com.leonardowaked.unabbet.network.RetrofitClient
+import com.leonardowaked.unabbet.util.BalanceManager // <-- ¡Importa BalanceManager!
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.time.LocalDate // Necesitarás Java 8+ API para esto
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+// Tu MainViewModel va aquí arriba, asegúrate de que esté como lo tienes:
 class MainViewModel : androidx.lifecycle.ViewModel() {
     var partidos by mutableStateOf<List<MatchResponse>>(emptyList())
         private set
@@ -102,12 +105,17 @@ class MainViewModel : androidx.lifecycle.ViewModel() {
 }
 
 
-
 @Composable
-fun HomeScreen(onClickAccount: () -> Unit = {},navController: NavController) {
+fun HomeScreen(
+    onClickAccount: () -> Unit = {},
+    navController: NavController,
+    onClickBetHistory: () -> Unit // <-- ¡Añade este nuevo parámetro!
+) {
     val viewModel: MainViewModel = viewModel()
-
     var selectedTab by remember { mutableStateOf("En Vivo") }
+
+    // Observar el saldo del usuario del BalanceManager
+    val userBalance by BalanceManager.userBalance.collectAsState() // <-- ¡Añade esto!
 
     LaunchedEffect(selectedTab) {
         when (selectedTab) {
@@ -153,7 +161,7 @@ fun HomeScreen(onClickAccount: () -> Unit = {},navController: NavController) {
                         text = { Text("Historial de apuestas") },
                         onClick = {
                             expanded = false
-                            println("Historial clickeado")
+                            onClickBetHistory() // <-- ¡LLAMA A LA FUNCIÓN PARA NAVEGAR!
                         }
                     )
 
@@ -177,7 +185,7 @@ fun HomeScreen(onClickAccount: () -> Unit = {},navController: NavController) {
                 }
 
                 Button(
-                    onClick = {  },
+                    onClick = {  }, // Puedes añadir una acción aquí si el botón de saldo debe hacer algo
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                         contentColor = Color.Black
@@ -187,7 +195,7 @@ fun HomeScreen(onClickAccount: () -> Unit = {},navController: NavController) {
                     shape = RoundedCornerShape(4.dp)
                 ) {
                     Column(horizontalAlignment = Alignment.End) {
-                        Text(text = "$100.000", fontWeight = FontWeight.Bold)
+                        Text(text = "$%.2f".format(userBalance), fontWeight = FontWeight.Bold) // <-- ¡Muestra el saldo dinámico!
                         Text(text = "Cajero", fontSize = 12.sp)
                     }
                 }
@@ -420,4 +428,16 @@ fun LeagueCard(league: LeagueData) {
             )
         }
     }
+}
+
+// Preview de HomeScreen (asegúrate de que está completo y sin errores)
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    // Debes pasar todos los parámetros requeridos por HomeScreen
+    HomeScreen(
+        onClickAccount = {},
+        navController = rememberNavController(),
+        onClickBetHistory = {} // Lambda vacío para el preview
+    )
 }
